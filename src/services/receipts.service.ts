@@ -34,6 +34,7 @@ class ReceiptsService {
         },
       ];
       const date = faker.date.anytime();
+      const debt = i % 2 === 0 ? faker.number.float({min: 100, max: 600}) : undefined;
 
       this.receipts.push({
         receiptId: i + 1,
@@ -47,10 +48,12 @@ class ReceiptsService {
           (expenses
             .map((item) => item.amount)
             .reduce((prev, curr) => prev + curr, 0) *
-			1.2 *
+            1.2 *
             3.7643) /
-          100,
+          100 + (debt ? debt * 2 : 0),
         expenses: expenses,
+        debt: debt,
+        penalty: debt ? debt : 0,
       });
     }
   }

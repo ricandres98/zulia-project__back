@@ -7,7 +7,9 @@ export interface ReceiptType {
 	year: number;
 	aliquot: number;
 	owedAmount: number;
-	expenses: ExpenseType[],
+	expenses: ExpenseType[];
+	debt?: number | undefined;
+	penalty?: number;
 }
 
 interface ExpenseType {
