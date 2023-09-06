@@ -1,5 +1,7 @@
 import express from "express";
 import { UsersService } from "../services/users.service";
+import { validatorHandler } from "../middlewares/validation.handler";
+import { updateUserSchema } from "../schemas/users.schema";
 
 const router = express.Router();
 
@@ -20,5 +22,21 @@ router.get("/:id", async (req, res, next) => {
 		next(err);
   }
 });
+
+router.patch("/:id",
+  validatorHandler(updateUserSchema, "body"),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { body } = req;
+
+      const rta = await service.updateById(parseInt(id), body);
+      
+      res.json(rta);
+
+    } catch (error) {
+      next(error);  
+    }
+})
 
 export default router;
