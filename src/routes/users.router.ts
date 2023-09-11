@@ -1,7 +1,7 @@
 import express from "express";
 import { UsersService } from "../services/users.service";
 import { validatorHandler } from "../middlewares/validation.handler";
-import { updateUserSchema } from "../schemas/users.schema";
+import { createUserSchema, updateUserSchema } from "../schemas/users.schema";
 
 const router = express.Router();
 
@@ -37,6 +37,21 @@ router.patch("/:id",
     } catch (error) {
       next(error);  
     }
+});
+
+router.post("/", 
+  validatorHandler(createUserSchema, "body"),
+  async (req, res, next) => {
+  try {
+    const { body } = req;
+
+    const rta = await service.createNewUser(body);
+
+    res.json(rta);
+
+  } catch (error) {
+    next(error)
+  }
 })
 
 export default router;

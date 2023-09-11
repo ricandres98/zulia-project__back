@@ -1,9 +1,9 @@
 import { faker } from "@faker-js/faker";
-import { UserType } from "../types/users.types";
+import { UserType, UserTypeWithId } from "../types/users.types";
 import boom from "@hapi/boom";
 
 interface UsersService {
-  users: UserType[];
+  users: UserTypeWithId[];
 }
 
 class UsersService {
@@ -45,7 +45,10 @@ class UsersService {
     }
   }
 
-  async updateById(id: number, body: { firstName?: string; lastName?: string }) {
+  async updateById(
+    id: number,
+    body: { firstName?: string; lastName?: string }
+  ) {
     const userIndex = this.users.findIndex((user) => user.id === id);
     if (userIndex != -1) {
       this.users[userIndex] = {
@@ -53,10 +56,37 @@ class UsersService {
         ...body,
       };
 
-      return this.users[userIndex]
+      return this.users[userIndex];
     } else {
-			throw boom.notFound("User does not exist");
-		}
+      throw boom.notFound("User does not exist");
+    }
+  }
+
+  async createNewUser(info: UserType) {
+    const newUser = {
+      id: this.users.length + 1,
+      ...info,
+    };
+
+    const usernameTaken = !!this.users.find(
+      (user) => user.username === newUser.username
+    );
+    const emailTaken = !!this.users.find(
+      (user) => user.email === newUser.email
+    );
+
+    const userAlreadyexist = usernameTaken || emailTaken;
+
+    if (userAlreadyexist) {
+      throw boom.conflict(
+        usernameTaken
+          ? "That username is already on our system"
+          : "That email is already on our system"
+      );
+    } else {
+      this.users.push(newUser);
+      return newUser;
+    }
   }
 }
 
