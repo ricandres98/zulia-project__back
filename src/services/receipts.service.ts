@@ -38,7 +38,7 @@ class ReceiptsService {
 
       this.receipts.push({
         receiptId: i + 1,
-        emision: `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`,
+        emision: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
         property: letter + faker.number.int({ min: 1, max: 12 }),
         owner: `${firstName} ${lastName}`,
         billedMonth: faker.date.month(),
