@@ -1,10 +1,11 @@
 import express from "express";
 import { apiRouter } from "./routes";
-import cors from "cors";
 import { handleBoom, handleErrors, logErrors } from "./middlewares/error.handler";
+import { config } from "./config/config"
+import cors from "cors";
 
 const app = express();
-const port = 8000;
+const port = config.port || 8000;
 
 app.use(cors());
 app.use(express.json())

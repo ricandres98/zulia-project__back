@@ -128,4 +128,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
->>>>>>> bc8cc38d26147b6cb9742eb2a1322fe336103f9b
+
+# postgres
+postgres_data
