@@ -16,3 +16,8 @@ interface ExpenseType {
 	description: string;
 	amount: number;
 }
+
+export interface CreateReceiptType {
+	periodId: number,
+    apartmentId: number,
+}
