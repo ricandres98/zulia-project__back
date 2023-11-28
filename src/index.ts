@@ -1,6 +1,6 @@
 import express from "express";
 import { apiRouter } from "./routes";
-import { handleBoom, handleErrors, logErrors } from "./middlewares/error.handler";
+import { handleBoom, handleErrors, logErrors, sequelizeErrorHandler } from "./middlewares/error.handler";
 import { config } from "./config/config"
 import cors from "cors";
 
@@ -16,5 +16,6 @@ app.listen(port, () => {
 
 apiRouter(app);
 app.use(logErrors);
+app.use(sequelizeErrorHandler);
 app.use(handleBoom);
 app.use(handleErrors);

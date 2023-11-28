@@ -1,9 +1,9 @@
 import { faker } from "@faker-js/faker";
 import boom from "@hapi/boom";
-import { Transaction } from "../types/transactions.types";
-import { number } from "joi";
+import { TransactionType } from "../types/transactions.types";
+import { sequelize } from "../libs/sequelize";
 
-interface TransactionWithId extends Transaction {
+interface TransactionWithId extends TransactionType {
   id: number;
 }
 
@@ -12,64 +12,36 @@ interface TransactionsService {
 }
 
 class TransactionsService {
-  constructor() {
-    this.transactions = [];
-		this.create();
+  async findAll() {
+    const transactions = await sequelize.models.Transaction.findAll();
+    return transactions;
   }
 
-  create() {
-    for (let i = 0; i < 15; i++) {
-			const transaction: TransactionWithId = {
-				id: i,
-				date: faker.date.recent(),
-				amount: parseFloat(faker.commerce.price({min: 100, max: 3000})),
-				reference: faker.string.numeric(10),
-				description: faker.commerce.product(),
-			};
+  async findOne(id: number) {
+    const transaction = await sequelize.models.Transaction.findByPk(id);
+    if (!transaction) {
+      throw boom.notFound("incorrect id");
+    }
 
-			this.transactions.push(transaction);
-		}
+    return transaction;
   }
 
-	async findAll() {
-		return this.transactions;
-	}
+  async create(data: TransactionType) {
+    const newTransaction = await sequelize.models.Transaction.create(data as any);
+    return newTransaction;
+  }
 
-	async createNewTransaction({ amount, date, description, reference }: Transaction) {
-		const alreadyExist = this.transactions.some(
-      (transaction) => transaction.reference === reference
-    );
+  async update(id: number, data: TransactionType) {
+		const transaction = await this.findOne(id);
+		const updatedTransaction = await transaction.update(data);
 
-		if (alreadyExist) {
-			throw boom.conflict("Ya ha sido registrado ese número de referencia");
-		} else {
-			this.transactions.push({
-				amount,
-				date,
-				description,
-				reference,
-				id: this.transactions.length,
-			});
+		return updatedTransaction;
+  }
 
-			return this.transactions[this.transactions.length - 1]
-		}
-	}
-
-	async updateTransaction(id: number, bodyRequest: Transaction) {
-		const transactionIndex = this.transactions.findIndex(
-      (transaction) => transaction.id === id
-    );
-
-		if (transactionIndex === -1) {
-			throw boom.badRequest("Transaction doesn't exist");
-		} else {
-			this.transactions[transactionIndex] = {
-				...this.transactions[transactionIndex],
-				...bodyRequest,
-			}
-
-			return this.transactions[transactionIndex];
-		}
+	async delete(id: number) {
+		const transaction = await this.findOne(id);
+		await transaction.destroy();
+		return { id };
 	}
 }
 

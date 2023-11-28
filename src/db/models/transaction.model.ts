@@ -13,6 +13,7 @@ const TransactionSchema: ModelAttributes = {
   reference: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   amount: {
     type: DataTypes.FLOAT,
