@@ -2,6 +2,7 @@ import express, { Express } from "express";
 import receiptsRouter from "./receipts.router";
 import usersRouter from "./users.router";
 import transactionRouter from "./transactions.router";
+import periodRouter from "./periods.router";
 
 function apiRouter(app: Express) {
     const router = express.Router();
@@ -10,6 +11,7 @@ function apiRouter(app: Express) {
     router.use("/receipts", receiptsRouter);
     router.use("/users", usersRouter);
     router.use("/transactions", transactionRouter);
+    router.use("/periods", periodRouter);
 }
 
 export { apiRouter };
