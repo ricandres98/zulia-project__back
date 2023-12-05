@@ -29,6 +29,12 @@ const OwnerSchema: ModelAttributes = {
     allowNull: true,
     field: "second_last_name",
   },
+  personId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    unique: true,
+    field: "person_id"
+  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,

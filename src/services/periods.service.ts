@@ -3,11 +3,11 @@ import boom from "@hapi/boom";
 import { CreatePeriodType, updatePeriodType } from "../types/periods.type";
 
 class PeriodService {
-  async create(data: CreatePeriodType) {
+  async checkPeriodIsValid(month: number, year: number) {
     const periodAlreadyExist = await sequelize.models.Period.findOne({
       where: {
-        month: data.month,
-        year: data.year,
+        month: month,
+        year: year,
       },
     });
     if (periodAlreadyExist) {
@@ -15,6 +15,12 @@ class PeriodService {
         `That period is already created under the id: ${periodAlreadyExist.dataValues.id}`
       );
     }
+
+    return true;
+  }
+
+  async create(data: CreatePeriodType) {
+    await this.checkPeriodIsValid(data.month, data.year);
 
     const newPeriod = await sequelize.models.Period.create(data as any);
     return newPeriod;
@@ -39,17 +45,7 @@ class PeriodService {
 			...period.dataValues,
 			...data
 		};
-		const periodAlreadyExist = await sequelize.models.Period.findOne({
-      where: {
-        month: newData.month,
-        year: newData.year,
-      },
-    });
-		if (periodAlreadyExist) {
-      throw boom.conflict(
-        `That period is already created under the id: ${periodAlreadyExist.dataValues.id}`
-      );
-    }
+    await this.checkPeriodIsValid(newData.month, newData.year);
 
 		const updatedPeriod = await period.update(data);
 		return updatedPeriod;
