@@ -1,92 +1,78 @@
-import { faker } from "@faker-js/faker";
-import { UserType, UserTypeWithId } from "../types/users.types";
+import { sequelize } from "../libs/sequelize";
 import boom from "@hapi/boom";
-
-interface UsersService {
-  users: UserTypeWithId[];
-}
+import { CreateUserType, UpdateUserType } from "../types/users.types";
+import bcrypt from "bcrypt";
+import { config } from "../config/config";
 
 class UsersService {
-  constructor() {
-    this.users = [];
-    this.createInfo();
-  }
 
-  createInfo() {
-    const amount = 5;
-    for (let i = 0; i < amount; i++) {
-      const firstName = faker.person.firstName();
-      const lastName = faker.person.lastName();
-      this.users.push({
-        id: i + 1,
-        firstName: firstName,
-        lastName: lastName,
-        username: faker.internet.displayName({
-          firstName: firstName,
-          lastName: lastName,
-        }),
-        email: faker.internet.email(),
-        apartment: "A" + faker.number.int({ min: 1, max: 12 }),
-        residence: "Zulia",
-      });
+  async checkUserAlreadyExists(email: string) {
+    const user = await sequelize.models.User.findOne({
+      where: {
+        email: email
+      }
+    });
+
+    if(user) {
+      throw boom.conflict("That email is already registered");
     }
+
+    return true;
   }
 
-  findAll() {
-    return this.users;
+  async create(data: CreateUserType) {
+    await this.checkUserAlreadyExists(data.email);
+    const hash = await bcrypt.hash(data.password, parseInt(config.hashingRounds as string));
+    const user = await sequelize.models.User.create({
+      ...data,
+      password: hash
+    });
+
+    delete user.dataValues.password;
+
+    return user;
   }
 
-  async findById(id: number) {
-    const user = this.users.find((user) => user.id === id);
-    if (user) {
-      return user;
-    } else {
+  async findAll() {
+    const users = await sequelize.models.User.findAll();
+    users.forEach(user => {
+      delete user.dataValues.password
+    });
+
+    return users;
+  }
+
+  async findOne(id: number) {
+    const user = await sequelize.models.User.findByPk(id, {
+      include: ["apartment"]
+    });
+    if(!user) {
       throw boom.notFound("User does not exist");
     }
+
+    delete user.dataValues.password;
+
+    return user;
   }
 
-  async updateById(
-    id: number,
-    body: { firstName?: string; lastName?: string }
-  ) {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex != -1) {
-      this.users[userIndex] = {
-        ...this.users[userIndex],
-        ...body,
-      };
+  async update(id: number, data: UpdateUserType) {
+    const user = await this.findOne(id);
+    const hash = await bcrypt.hash(data.password, parseInt(config.hashingRounds as string));
+    const updatedUser = await user.update({
+      password: hash
+    });
+    delete updatedUser.dataValues.password;
 
-      return this.users[userIndex];
-    } else {
-      throw boom.notFound("User does not exist");
-    }
-  }
-
-  async createNewUser(info: UserType) {
-    const newUser = {
-      id: this.users.length + 1,
-      ...info,
+    return {
+      message: "Updated successfully",
+      updatedUser
     };
+  }
 
-    const usernameTaken = !!this.users.find(
-      (user) => user.username === newUser.username
-    );
-    const emailTaken = !!this.users.find(
-      (user) => user.email === newUser.email
-    );
-
-    const userAlreadyexist = usernameTaken || emailTaken;
-
-    if (userAlreadyexist) {
-      throw boom.conflict(
-        usernameTaken
-          ? "That username is already on our system"
-          : "That email is already on our system"
-      );
-    } else {
-      this.users.push(newUser);
-      return newUser;
-    }
+  async delete(id: number) {
+    const user = await this.findOne(id);
+    await user.destroy();
+    return id;
   }
 }
 

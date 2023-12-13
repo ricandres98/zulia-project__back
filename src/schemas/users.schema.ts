@@ -1,21 +1,22 @@
 import Joi from "joi";
 
-const name = Joi.string().alphanum().min(3).max(15);
 const email = Joi.string().email();
-const apartment = Joi.string().alphanum().min(2).max(4);
+const password = Joi.string().min(8);
+const apartmentId = Joi.number().integer().min(1);
+const id = Joi.number().integer().min(1)
 
 const updateUserSchema = Joi.object({
-    firstName: name,
-    lastName: name,
+	password: password.required()
 });
 
 const createUserSchema = Joi.object({
-    firstName: name.required(),
-    lastName: name.required(),
-    username:name.required(),
-    email: email.required(),
-    apartment: apartment.required(),
-    residence: name.required()
+  email: email.required(),
+  password: password.required(),
+  apartmentId: apartmentId.required(),
 });
 
-export { updateUserSchema, createUserSchema };
+const getUserByIdSchema = Joi.object({
+	id: id.required(),
+})
+
+export { updateUserSchema, createUserSchema, getUserByIdSchema };

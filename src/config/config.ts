@@ -19,7 +19,8 @@ const config = {
     dbHost: process.env.POSTGRES_HOST,
     dbPassword: process.env.POSTGRES_PASSWORD,
     dbPort: process.env.POSTGRES_PORT,
-    dbURI: process.env.POSTGRES_URI
+    dbURI: process.env.POSTGRES_URI,
+    hashingRounds: process.env.HASHING_ROUNDS
 };
 
 export { config };

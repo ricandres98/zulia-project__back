@@ -1,5 +1,5 @@
 import { ErrorRequestHandler } from "express";
-import { ValidationError } from "sequelize";
+import { ForeignKeyConstraintError, ValidationError } from "sequelize";
 
 const logErrors: ErrorRequestHandler = (err, req, res, next) => {
   console.error("LOG_ERRORS");
@@ -28,11 +28,18 @@ const handleBoom: ErrorRequestHandler = (err, req, res, next) => {
 
 const sequelizeErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if(err instanceof ValidationError) {
+    console.error("HANDLE_SEQUELIZE_ERROR");
     res.status(409).json({
       statusCode: 409,
       message: err.name,
       errors: err.errors
     });
+  } else if(err instanceof ForeignKeyConstraintError) {
+    res.status(409).json({
+      statusCode: 409,
+      message: err.message,
+      errors: err.original
+    })
   } else {
     next(err);
   }

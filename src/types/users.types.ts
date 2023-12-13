@@ -1,12 +1,11 @@
-export interface UserType {
-    firstName: string;
-    lastName: string;
-    username: string;
-    email: string;
-    apartment: string;
-    residence: string;
+interface CreateUserType {
+  email: string,
+  password: string,
+  apartmentId: string,
 }
 
-export interface UserTypeWithId extends UserType {
-    id: number;
+interface UpdateUserType {
+	password: string
 }
+
+export { CreateUserType, UpdateUserType };
