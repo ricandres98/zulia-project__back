@@ -4,6 +4,7 @@ import usersRouter from "./users.router";
 import transactionRouter from "./transactions.router";
 import periodRouter from "./periods.router";
 import ownerRouter from "./owners.router";
+import apartmentRouter from "./apartments.router";
 
 function apiRouter(app: Express) {
     const router = express.Router();
@@ -14,6 +15,7 @@ function apiRouter(app: Express) {
     router.use("/transactions", transactionRouter);
     router.use("/periods", periodRouter);
     router.use("/owners", ownerRouter);
+    router.use("/apartments", apartmentRouter);
 }
 
 export { apiRouter };

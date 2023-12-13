@@ -13,4 +13,5 @@ interface UpdateOwnerType {
   secondLastName?: string;
   personId?: number;
 }
+
 export { CreateOwnerType, UpdateOwnerType };
