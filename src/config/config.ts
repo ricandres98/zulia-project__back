@@ -20,7 +20,8 @@ const config = {
     dbPassword: process.env.POSTGRES_PASSWORD,
     dbPort: process.env.POSTGRES_PORT,
     dbURI: process.env.POSTGRES_URI,
-    hashingRounds: process.env.HASHING_ROUNDS
+    hashingRounds: process.env.HASHING_ROUNDS,
+    jwtSecret: process.env.JWT_SECRET,
 };
 
 export { config };

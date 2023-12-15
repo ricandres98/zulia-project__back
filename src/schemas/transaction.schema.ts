@@ -12,7 +12,7 @@ const createTransactionSchema = Joi.object({
   description: description.required(),
   amount: amount.required(),
   reference: reference.required(),
-  period_id: id,
+  periodId: id,
 });
 
 const updateTransactionSchema = Joi.object({
@@ -20,6 +20,7 @@ const updateTransactionSchema = Joi.object({
   description: description,
   amount: amount,
   reference: reference,
+  periodId: id,
 });
 
 const getTransactionByIdSchema = Joi.object({

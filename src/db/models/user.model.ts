@@ -19,6 +19,10 @@ const UserSchema: ModelAttributes = {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  role: {
+    type: DataTypes.STRING,
+    allowNull:false,
+  },
   apartmentId: {
     type: DataTypes.INTEGER,
     allowNull: false,

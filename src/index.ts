@@ -1,8 +1,9 @@
 import express from "express";
 import { apiRouter } from "./routes";
 import { handleBoom, handleErrors, logErrors, sequelizeErrorHandler } from "./middlewares/error.handler";
-import { config } from "./config/config"
+import { config } from "./config/config";
 import cors from "cors";
+import "./utils/auth";
 
 const app = express();
 const port = config.port || 8000;

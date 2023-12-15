@@ -7,11 +7,7 @@ import { config } from "../config/config";
 class UsersService {
 
   async checkUserAlreadyExists(email: string) {
-    const user = await sequelize.models.User.findOne({
-      where: {
-        email: email
-      }
-    });
+    const user = await this.findByEmail(email);
 
     if(user) {
       throw boom.conflict("That email is already registered");
@@ -40,6 +36,19 @@ class UsersService {
     });
 
     return users;
+  }
+
+  async findByEmail(email: string) {
+    const user = await sequelize.models.User.findOne({
+      where: {
+        email: email
+      }
+    });
+    if(user) {
+      return user;
+    } else {
+      return false;
+    }
   }
 
   async findOne(id: number) {
