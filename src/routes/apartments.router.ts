@@ -2,6 +2,8 @@ import express from "express";
 import { ApartmentService } from "../services/apartments.service";
 import { validatorHandler } from "../middlewares/validation.handler";
 import { createApartmentSchema, getApartmentByIdSchema, updateApartmentSchema } from "../schemas/apartment.schema";
+import passport from "passport";
+import { UserFromToken } from "../types/auth.types";
 
 const router = express.Router();
 const service = new ApartmentService();
@@ -14,6 +16,20 @@ router.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+router.get(
+  "/by-token",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res, next) => {
+    try {
+      const user = req.user
+      const rta = await service.findOne((user as UserFromToken).apt);
+      res.json(rta);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 router.get(
   "/:id",

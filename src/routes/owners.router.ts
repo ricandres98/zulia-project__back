@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { OwnerService } from "../services/owners.service";
 import { validatorHandler } from "../middlewares/validation.handler";
 import {
@@ -6,9 +7,13 @@ import {
   getOwnerByIdSchema,
   updateOwnerSchema,
 } from "../schemas/owner.schema";
+import passport from "passport";
+import { UserFromToken } from "../types/auth.types";
 
 const router = express.Router();
 const service = new OwnerService();
+
+router.options("/:id", cors());
 
 router.get("/", async (req, res, next) => {
   try {
@@ -20,12 +25,14 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get(
-  "/:id",
+  "/by-token",
   validatorHandler(getOwnerByIdSchema, "params"),
+  passport.authenticate("jwt", { session: false }),
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const rta = await service.findOne(parseInt(id));
+      const user = req.user;
+      const rta = await service.findOne((user as UserFromToken).apt);
       res.json(rta);
     } catch (error) {
       next(error);
@@ -36,6 +43,7 @@ router.get(
 router.post(
   "/",
   validatorHandler(createOwnerSchema, "body"),
+  // passport.authenticate("jwt", { session: false }),
   async (req, res, next) => {
     try {
       const { body } = req;
@@ -47,15 +55,18 @@ router.post(
   }
 );
 
+
 router.patch(
   "/:id",
+  cors(),
   validatorHandler(getOwnerByIdSchema, "params"),
   validatorHandler(updateOwnerSchema, "body"),
+  passport.authenticate("jwt", { session: false }),
   async (req, res, next) => {
     try {
-      const { id } = req.params;
       const { body } = req;
-      const rta = await service.update(parseInt(id), body);
+      const user = req.user;
+      const rta = await service.update((user as UserFromToken).apt, body);
       res.json(rta);
     } catch (error) {
       next(error);
@@ -66,6 +77,7 @@ router.patch(
 router.delete(
   "/:id",
   validatorHandler(getOwnerByIdSchema, "params"),
+  passport.authenticate("jwt", { session: false }),
   async (req, res, next) => {
     try {
       const { id } = req.params;

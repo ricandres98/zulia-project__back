@@ -1,15 +1,13 @@
-interface CreateApartmentType {
+import { Owner } from "./owners.type";
+
+interface Apartment {
+	id: number;
 	apartmentNumber: string;
 	aliquot: number;
+	createdAt: string;
 	ownerId: number;
-	debt: number;
-}
-
-interface UpdateApartmentType {
-	apartmentNumber?: string;
-	aliquot?: number;
-	ownerId?: number;
 	debt?: number;
+	owner: Owner
 }
 
-export { CreateApartmentType, UpdateApartmentType };
+export { Apartment };

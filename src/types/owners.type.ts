@@ -1,17 +1,11 @@
-interface CreateOwnerType {
+interface Owner {
+  id: number;
   firstName: string;
-  middleName: string;
-  lastName: string;
-  secondLastName: string;
-  personId: number;
-}
-
-interface UpdateOwnerType {
-  firstName?: string;
   middleName?: string;
-  lastName?: string;
+  lastName: string;
   secondLastName?: string;
-  personId?: number;
+  personId: number;
+  createdAt: string;
 }
 
-export { CreateOwnerType, UpdateOwnerType };
+export { Owner };

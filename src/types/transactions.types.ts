@@ -1,7 +1,11 @@
-export interface TransactionType {
-    date: Date;
-    description: string;
-    amount: number;
+interface Transaction {
+    id: number;
     reference: string;
-    period_id?: number;
+    amount: number;
+    description: string;
+    date: string;
+    createdAt: string;
+    periodId?: number;
 }
+
+export { Transaction };

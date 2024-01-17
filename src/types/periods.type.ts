@@ -1,10 +1,8 @@
-interface CreatePeriodType {
+interface Period {
+  id: number;
   month: number;
-	year: number;
+  year: number;
+  createdAt: string;
 }
 
-interface updatePeriodType {
-  month?: number;
-  year?: number;
-}
-export { CreatePeriodType, updatePeriodType };
+export { Period };

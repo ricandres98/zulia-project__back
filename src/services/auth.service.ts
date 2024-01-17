@@ -1,17 +1,18 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import boom from "@hapi/boom";
 import bcrypt from "bcrypt";
 import { UsersService } from "./users.service";
-import { UserWithFields } from "../types/auth.types";
+import { Payload, UserWithFields } from "../types/auth.types";
 import { config } from "../config/config";
 
 const service = new UsersService();
 
 class AuthService {
   signToken(user: UserWithFields) {
-    const payload = {
+    const payload: Payload = {
       sub: user.id,
-      role: user.role
+      role: user.role,
+      apt: user.apartmentId
     };
     
     const token = jwt.sign(payload, config.jwtSecret as string);
@@ -27,7 +28,7 @@ class AuthService {
     if (!user) {
       throw boom.unauthorized();
     } else {
-      const isMatch = await bcrypt.compare(password, user.dataValues.password);
+      const isMatch = await bcrypt.compare(password, user.dataValues.password as string);
       if (!isMatch) {
         throw boom.unauthorized();
       } else {

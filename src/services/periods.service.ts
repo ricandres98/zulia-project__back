@@ -1,10 +1,12 @@
 import { sequelize } from "../libs/sequelize";
 import boom from "@hapi/boom";
-import { CreatePeriodType, updatePeriodType } from "../types/periods.type";
+import { CreatePeriodDto, updatePeriodDto } from "../types/dto/periods.dto";
+import { Model } from "sequelize";
+import { Period } from "../types/periods.type";
 
 class PeriodService {
   async checkPeriodIsValid(month: number, year: number) {
-    const periodAlreadyExist = await sequelize.models.Period.findOne({
+    const periodAlreadyExist: Model<Period> | null = await sequelize.models.Period.findOne({
       where: {
         month: month,
         year: year,
@@ -19,27 +21,27 @@ class PeriodService {
     return true;
   }
 
-  async create(data: CreatePeriodType) {
+  async create(data: CreatePeriodDto) {
     await this.checkPeriodIsValid(data.month, data.year);
 
-    const newPeriod = await sequelize.models.Period.create(data as any);
+    const newPeriod: Model<Period> = await sequelize.models.Period.create(data);
     return newPeriod;
   }
 
   async findAll() {
-    const periods = await sequelize.models.Period.findAll();
+    const periods: Model<Period>[] = await sequelize.models.Period.findAll();
     return periods;
   }
 
 	async findOne(id: number) {
-		const period = await sequelize.models.Period.findByPk(id);
+		const period: Model<Period> | null = await sequelize.models.Period.findByPk(id);
 		if(!period) {
 			throw boom.notFound("Id not found");
 		}
 		return period;
 	}
 
-	async update(id: number, data: updatePeriodType) {
+	async update(id: number, data: updatePeriodDto) {
 		const period = await this.findOne(id);
 		const newData = {
 			...period.dataValues,

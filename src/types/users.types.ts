@@ -1,12 +1,9 @@
-interface CreateUserType {
-  email: string,
-  password: string,
-  apartmentId: string,
-  role: "user" | "admin",
+interface User {
+  id: number;
+  email: string;
+  password?: string;
+  role: "admin" | "user";
+  apartmentId: number;
 }
 
-interface UpdateUserType {
-	password: string
-}
-
-export { CreateUserType, UpdateUserType };
+export { User };

@@ -1,13 +1,15 @@
 import { sequelize } from "../libs/sequelize";
 import boom from "@hapi/boom";
-import { CreateUserType, UpdateUserType } from "../types/users.types";
 import bcrypt from "bcrypt";
 import { config } from "../config/config";
+import { CreateUserDto, ReadUserDto, UpdateUserDto } from "../types/dto/users.dto";
+import { User } from "../types/users.types";
+import { Model } from "sequelize";
 
 class UsersService {
 
   async checkUserAlreadyExists(email: string) {
-    const user = await this.findByEmail(email);
+    const user: false | Model<User> = await this.findByEmail(email);
 
     if(user) {
       throw boom.conflict("That email is already registered");
@@ -16,21 +18,23 @@ class UsersService {
     return true;
   }
 
-  async create(data: CreateUserType) {
+  async create(data: CreateUserDto) {
     await this.checkUserAlreadyExists(data.email);
-    const hash = await bcrypt.hash(data.password, parseInt(config.hashingRounds as string));
-    const user = await sequelize.models.User.create({
-      ...data,
-      password: hash
-    });
-
-    delete user.dataValues.password;
-
-    return user;
+    if(data.password) {
+      const hash = await bcrypt.hash(data.password, parseInt(config.hashingRounds as string));
+      const user: Model<User> = await sequelize.models.User.create({
+        ...data,
+        password: hash
+      });
+  
+      delete user.dataValues.password;
+  
+      return user;
+    }
   }
 
   async findAll() {
-    const users = await sequelize.models.User.findAll();
+    const users: Model<User>[] = await sequelize.models.User.findAll();
     users.forEach(user => {
       delete user.dataValues.password
     });
@@ -39,7 +43,7 @@ class UsersService {
   }
 
   async findByEmail(email: string) {
-    const user = await sequelize.models.User.findOne({
+    const user: Model<User> | null = await sequelize.models.User.findOne({
       where: {
         email: email
       }
@@ -52,7 +56,7 @@ class UsersService {
   }
 
   async findOne(id: number) {
-    const user = await sequelize.models.User.findByPk(id, {
+    const user: Model<User> | null = await sequelize.models.User.findByPk(id, {
       include: ["apartment"]
     });
     if(!user) {
@@ -64,18 +68,20 @@ class UsersService {
     return user;
   }
 
-  async update(id: number, data: UpdateUserType) {
-    const user = await this.findOne(id);
-    const hash = await bcrypt.hash(data.password, parseInt(config.hashingRounds as string));
-    const updatedUser = await user.update({
-      password: hash
-    });
-    delete updatedUser.dataValues.password;
-
-    return {
-      message: "Updated successfully",
-      updatedUser
-    };
+  async update(id: number, data: UpdateUserDto) {
+    if (data.password) {
+      const user = await this.findOne(id);
+      const hash = await bcrypt.hash(data.password, parseInt(config.hashingRounds as string));
+      const updatedUser = await user.update({
+        password: hash
+      });
+      delete updatedUser.dataValues.password;
+  
+      return {
+        message: "Updated successfully",
+        updatedUser
+      };
+    }
   }
 
   async delete(id: number) {
