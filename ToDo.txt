@@ -1,3 +1,5 @@
 - Crear endpoint para manejar solicitud de tipo PATCH con la información del usuario
 
 - Crear endpoints para que usuarios de tipo ADMIN puedan realizar un POST para crear información de usuarios, recibos, etc.
+
+- La página principal tiene un bug: Cuando se refresca no envía el bearer token en la solicitud, en su lugar envía el valor false.

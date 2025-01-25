@@ -15,15 +15,18 @@ class OwnerService {
       }
     });
     
-    if(owner) {
-      throw boom.conflict(`That owner already exists`);
+    if(!owner) {
+      return false;
     }
 
     return true;
   }
 
   async create(data: CreateOwnerDto) {
-    await this.checkOwnerExists(data.personId);
+    const ownerExists = await this.checkOwnerExists(data.personId);
+    if(ownerExists) {
+      throw boom.conflict(`That owner already exists`);
+    } 
     const newOwner: Model<Owner> = await sequelize.models.Owner.create(data);
     return newOwner;
   }
@@ -38,6 +41,16 @@ class OwnerService {
     if(!owner) {
       throw boom.notFound("Id not found");
     }
+
+    return owner;
+  }
+
+  async findOneByPersonId(personId: number) {
+    const owner: Model<Owner> | null = await sequelize.models.Owner.findOne({
+      where: {
+        personId: personId
+      }
+    });
 
     return owner;
   }

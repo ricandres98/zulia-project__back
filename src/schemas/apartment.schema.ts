@@ -24,4 +24,13 @@ const getApartmentByIdSchema = Joi.object({
     id: id.required(),
 });
 
-export { createApartmentSchema, updateApartmentSchema, getApartmentByIdSchema };
+const checkApartmentExistsSchema = Joi.object({
+	apartmentNumber: apartmentNumber.required(),
+})
+
+export {
+  createApartmentSchema,
+  updateApartmentSchema,
+  getApartmentByIdSchema,
+  checkApartmentExistsSchema,
+};

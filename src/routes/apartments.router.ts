@@ -45,6 +45,19 @@ router.get(
   }
 );
 
+router.get("/apartment-exists/:apartmentNumber",
+  validatorHandler(checkOwnerExistsSchema, "params"),
+  async (req, res, next) => {
+  try {
+    const { personId } = req.params;
+    console.log({personId});
+    const rta = await service.checkOwnerExists(parseInt(personId));
+    res.json(rta);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post(
   "/",
   validatorHandler(createApartmentSchema, "body"),

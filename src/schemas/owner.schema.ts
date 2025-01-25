@@ -24,4 +24,12 @@ const getOwnerByIdSchema = Joi.object({
     id: id.required(),
 });
 
-export { createOwnerSchema, updateOwnerSchema, getOwnerByIdSchema };
+const getOwnerByPersonIdSchema = Joi.object({
+    personId: id.required(),
+});
+
+const checkOwnerExistsSchema = Joi.object({
+    personId: personId.required(),
+});
+
+export { getOwnerByPersonIdSchema, createOwnerSchema, updateOwnerSchema, getOwnerByIdSchema, checkOwnerExistsSchema };

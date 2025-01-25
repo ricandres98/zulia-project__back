@@ -3,8 +3,10 @@ import cors from "cors";
 import { OwnerService } from "../services/owners.service";
 import { validatorHandler } from "../middlewares/validation.handler";
 import {
+  checkOwnerExistsSchema,
   createOwnerSchema,
   getOwnerByIdSchema,
+  getOwnerByPersonIdSchema,
   updateOwnerSchema,
 } from "../schemas/owner.schema";
 import passport from "passport";
@@ -18,6 +20,32 @@ router.options("/:id", cors());
 router.get("/", async (req, res, next) => {
   try {
     const rta = await service.findAll();
+    res.json(rta);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/by-personId/:personId",
+  validatorHandler(getOwnerByPersonIdSchema, "params"),
+  async (req, res, next) => {
+  try {
+    const { personId } = req.params;
+    console.log({personId});
+    const rta = await service.findOneByPersonId(parseInt(personId));
+    res.json(rta);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/owner-exists/:personId",
+  validatorHandler(checkOwnerExistsSchema, "params"),
+  async (req, res, next) => {
+  try {
+    const { personId } = req.params;
+    console.log({personId});
+    const rta = await service.checkOwnerExists(parseInt(personId));
     res.json(rta);
   } catch (error) {
     next(error);
