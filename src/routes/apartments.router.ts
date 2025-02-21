@@ -1,7 +1,7 @@
 import express from "express";
 import { ApartmentService } from "../services/apartments.service";
 import { validatorHandler } from "../middlewares/validation.handler";
-import { createApartmentSchema, getApartmentByIdSchema, updateApartmentSchema } from "../schemas/apartment.schema";
+import { checkApartmentExistsSchema, createApartmentSchema, getApartmentByIdSchema, updateApartmentSchema } from "../schemas/apartment.schema";
 import passport from "passport";
 import { UserFromToken } from "../types/auth.types";
 
@@ -46,12 +46,12 @@ router.get(
 );
 
 router.get("/apartment-exists/:apartmentNumber",
-  validatorHandler(checkOwnerExistsSchema, "params"),
+  validatorHandler(checkApartmentExistsSchema, "params"),
   async (req, res, next) => {
   try {
-    const { personId } = req.params;
-    console.log({personId});
-    const rta = await service.checkOwnerExists(parseInt(personId));
+    const { apartmentNumber } = req.params;
+    console.log({apartmentNumber});
+    const rta = await service.checkApartmentExists(apartmentNumber);
     res.json(rta);
   } catch (error) {
     next(error);

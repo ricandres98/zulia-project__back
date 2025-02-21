@@ -20,10 +20,10 @@ class ApartmentService {
     });
     
     if(apartment) {
-      throw boom.conflict(`That apartment already exists`);
+      return apartment.dataValues.id;
+    } else {
+      return false;
     }
-
-    return true;
 	}
 
   async findAll() {
@@ -58,7 +58,10 @@ class ApartmentService {
   }
 
   async create(data: CreateApartmentDto) {
-		await this.checkApartmentExists(data.apartmentNumber);
+		const apartmentAlreadyExists = await this.checkApartmentExists(data.apartmentNumber);
+    if (apartmentAlreadyExists) {
+      throw boom.conflict(`That apartment already exists`);
+    }
 		const newApartment: Model<Apartment> = await sequelize.models.Apartment.create(data as any);
 		return newApartment;
 	}
@@ -67,7 +70,10 @@ class ApartmentService {
 		const apartment = await this.findOne(id);
     
     if(data.apartmentNumber && apartment.dataValues.apartmentNumber !== data.apartmentNumber) {
-      await this.checkApartmentExists(data.apartmentNumber);
+      const apartmentAlreadyExists = await this.checkApartmentExists(data.apartmentNumber);
+      if (apartmentAlreadyExists) {
+        throw boom.conflict(`That apartment already exists`);
+      }
     }
 
     const updatedOwner = await apartment.update(data);
