@@ -7,6 +7,7 @@ import ownerRouter from "./owners.router";
 import apartmentRouter from "./apartments.router";
 import paymentRouter from "./payments.router";
 import authRouter from "./auth.router";
+import verificationRouter from "./verification.router";
 
 function apiRouter(app: Express) {
   const router = express.Router();
@@ -20,6 +21,7 @@ function apiRouter(app: Express) {
   router.use("/apartments", apartmentRouter);
   router.use("/payments", paymentRouter);
   router.use("/auth", authRouter);
+  router.use("/verification", verificationRouter);
 }
 
 export { apiRouter };

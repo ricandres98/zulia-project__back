@@ -6,4 +6,5 @@ interface UpdateUserDto extends Pick<User, "password"> {}
 
 interface ReadUserDto extends Omit<User, "password"> {}
 
+
 export { CreateUserDto, UpdateUserDto, ReadUserDto };
