@@ -9,15 +9,21 @@ const VerificationSchema: ModelAttributes = {
     allowNull: false,
     autoIncrement: true,
   },
-	email: {
-		type: DataTypes.STRING,
-		allowNull: false,
-	},
-	code: {
-		type: DataTypes.STRING(6),
-		allowNull: false,
-	},
-	createdAt: {
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  code: {
+    type: DataTypes.STRING(6),
+    allowNull: false,
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: "created_at",
+    defaultValue: NOW,
+  },
+  updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
     field: "created_at",
@@ -26,14 +32,14 @@ const VerificationSchema: ModelAttributes = {
 };
 
 class Verification extends Model {
-	static config(sequelize: Sequelize) {
-			return {
-				sequelize,
-				tableName: VERIFICATION_TABLE,
-				modelName: "Verification",
-				timestamps: true,
-			};
-		}
+  static config(sequelize: Sequelize) {
+    return {
+      sequelize,
+      tableName: VERIFICATION_TABLE,
+      modelName: "Verification",
+      timestamps: true,
+    };
+  }
 }
 
 export { VERIFICATION_TABLE, Verification, VerificationSchema };

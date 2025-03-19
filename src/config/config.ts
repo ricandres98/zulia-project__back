@@ -22,6 +22,8 @@ const config = {
     dbURI: process.env.POSTGRES_URI,
     hashingRounds: process.env.HASHING_ROUNDS,
     jwtSecret: process.env.JWT_SECRET,
+    emailUser: process.env.EMAIL_USER,
+    emailPassword: process.env.EMAIL_PASSWORD,
 };
 
 export { config };

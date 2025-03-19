@@ -25,6 +25,12 @@ module.exports = {
         field: "created_at",
         defaultValue: NOW,
       },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: "created_at",
+        defaultValue: NOW,
+      },
     });
      
   },

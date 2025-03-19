@@ -1,21 +1,53 @@
 import { sequelize } from "../libs/sequelize";
 import boom from "@hapi/boom";
-import bcrypt from "bcrypt";
-import { config } from "../config/config";
 import { User } from "../types/users.types";
 import { Model } from "sequelize";
 import { VerificationTuple } from "../types/verifications.types";
-import { VerifyEmailDto } from "../types/dto/verifications.dto";
+import { VerifyCodeDto, VerifyEmailDto } from "../types/dto/verifications.dto";
+import { createRandomCode } from "../utils/createRandomCode";
+import { EmailService } from "./email.service";
+import { isConstructorDeclaration } from "typescript";
 
 class VerificationService {
+  private emailService: EmailService;
+  
+  constructor() {
+    this.emailService = new EmailService();
+  }
+
   async verifyEmail(data: VerifyEmailDto) {
     const { email } = data;
-    /** Create a random number and assign it to a tuple in the DB 
-     * along with the email address
-     * 
-     * It might (and should) be a different service
-    */
+    console.log("Email received: ", email);
+    const code = createRandomCode(6);
+    console.log("Code generated: ", code);
 
+    const emailExists = await this.checkEmailAlreadyExists(email);
+
+    let verificationTuple: Model<VerificationTuple> | false = false;
+
+    if (emailExists) {
+      verificationTuple = (await this.findByEmail(
+        email
+      )) as Model<VerificationTuple>;
+      verificationTuple.update({ code });
+    } else {
+      verificationTuple =
+        await sequelize.models.Verification.create({
+          email,
+          code,
+        });
+    }
+    /** Send email with code using nodemailer */
+    console.log("Sending email...");
+    this.emailService.sendEmail({
+      from: "",
+      to: email,
+      subject: "Verification Code",
+      text: `Your verification code is ${code}`,
+      html: `<h1>Your verification code is ${code}</h1>`,
+    });
+    
+    return { message: "Sending email..."}; 
   }
 
   async checkEmailAlreadyExists(email: string) {
@@ -26,6 +58,32 @@ class VerificationService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  async verifyCode(data: VerifyCodeDto) {
+    const { email, code } = data
+    const verificationTuple = await this.findByEmail(email);
+    if (!verificationTuple) {
+      return {
+        /** true if code is verified, false if not or error */
+        status: false,
+        message: "Email is not in database",
+      }
+    }
+    
+    const codesMatch = verificationTuple.dataValues.code === code;
+    /** Remember to verify if code is expired */
+    if (codesMatch) {
+      return {
+        status: true, 
+        message: "Email verified"
+      }
+    } else {
+      return {
+        status: false,
+        message: "Wrong code"
+      }
     }
   }
 

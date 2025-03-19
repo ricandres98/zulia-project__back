@@ -8,6 +8,7 @@ import { Period, PeriodSchema } from "./period.model";
 import { Payment, PaymentSchema } from "./payment.model";
 import { Email, EmailSchema } from "./email.model";
 import { ApartmentEmail, ApartmentEmailSchema } from "./apartment-email.model";
+import { Verification, VerificationSchema} from "./verification.model";
 
 function setupModels(sequelize: Sequelize) {
   Owner.init(OwnerSchema, Owner.config(sequelize));
@@ -19,6 +20,7 @@ function setupModels(sequelize: Sequelize) {
   Payment.init(PaymentSchema, Payment.config(sequelize));
   Email.init(EmailSchema, Email.config(sequelize));
   ApartmentEmail.init(ApartmentEmailSchema, ApartmentEmail.config(sequelize));
+  Verification.init(VerificationSchema, Verification.config(sequelize));
 
   Owner.associate(sequelize.models);
   Apartment.associate(sequelize.models);

@@ -2,4 +2,6 @@ import { VerificationTuple } from "../verifications.types";
 
 interface VerifyEmailDto extends Pick<VerificationTuple, "email"> {}
 
-export { VerifyEmailDto };
+interface VerifyCodeDto extends Pick<VerificationTuple, "email" | "code"> {}
+
+export { VerifyEmailDto, VerifyCodeDto };
