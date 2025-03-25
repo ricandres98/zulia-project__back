@@ -7,6 +7,7 @@ import { VerifyCodeDto, VerifyEmailDto } from "../types/dto/verifications.dto";
 import { createRandomCode } from "../utils/createRandomCode";
 import { EmailService } from "./email.service";
 import { isConstructorDeclaration } from "typescript";
+import { verificationCodeHTMLTemplate } from "../templates/verification-code.template";
 
 class VerificationService {
   private emailService: EmailService;
@@ -44,7 +45,7 @@ class VerificationService {
       to: email,
       subject: "Verification Code",
       text: `Your verification code is ${code}`,
-      html: `<h1>Your verification code is ${code}</h1>`,
+      html: verificationCodeHTMLTemplate(code),
     });
     
     return { message: "Sending email..."}; 
@@ -62,6 +63,7 @@ class VerificationService {
   }
 
   async verifyCode(data: VerifyCodeDto) {
+    const LIFETIME = 10 * 60 * 1000 // 10 min in ms
     const { email, code } = data
     const verificationTuple = await this.findByEmail(email);
     if (!verificationTuple) {
@@ -72,8 +74,17 @@ class VerificationService {
       }
     }
     
+    /** Time in ms that has passed since the code was created in DB */
+    const timePassed = Date.now() - verificationTuple.dataValues.updatedAt.getTime()
+
+    if(timePassed > LIFETIME) {
+      return {
+        status: false,
+        message: "Code is expired",
+      }
+    }
+
     const codesMatch = verificationTuple.dataValues.code === code;
-    /** Remember to verify if code is expired */
     if (codesMatch) {
       return {
         status: true, 
