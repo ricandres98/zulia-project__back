@@ -1,6 +1,4 @@
 import express from "express";
-import passport from "passport";
-import { UserWithFields } from "../types/auth.types";
 import { validatorHandler } from "../middlewares/validation.handler";
 import { verifyCodeSchema, verifyEmailSchema } from "../schemas/verification.schema";
 import { VerificationService } from "../services/verification.service";
