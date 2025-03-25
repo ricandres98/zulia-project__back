@@ -40,7 +40,7 @@ class VerificationService {
     }
     /** Send email with code using nodemailer */
     console.log("Sending email...");
-    this.emailService.sendEmail({
+    await this.emailService.sendEmail({
       from: "",
       to: email,
       subject: "Verification Code",
@@ -48,7 +48,7 @@ class VerificationService {
       html: verificationCodeHTMLTemplate(code),
     });
     
-    return { message: "Sending email..."}; 
+    return true; 
   }
 
   async checkEmailAlreadyExists(email: string) {

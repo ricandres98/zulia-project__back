@@ -19,16 +19,15 @@ class EmailService {
   async sendEmail(mailOptions: mailOptions) {
     mailOptions.from = config.emailUser!;
 
-    const response = await this.transport.sendMail(mailOptions, (err, info) => {
+    await this.transport.sendMail(mailOptions, (err, info) => {
       if(err) {
         console.log(info);
         throw err;
-      } 
-      console.log("Message sent: ", info);
+      } else {
+        console.log("Message sent: ", info);
+      }
     });
-    console.log(response);
     this.transport.close();
-    return response;
   }
 
 }
