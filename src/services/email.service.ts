@@ -6,7 +6,7 @@ class EmailService {
   private transport: nodemailer.Transporter;
   constructor() {
     this.transport = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: 'smtp.gmail.com',
       port: 465,
       secure: true,
       auth: {
@@ -19,7 +19,13 @@ class EmailService {
   async sendEmail(mailOptions: mailOptions) {
     mailOptions.from = config.emailUser!;
 
-    const response = await this.transport.sendMail(mailOptions);
+    const response = await this.transport.sendMail(mailOptions, (err, info) => {
+      if(err) {
+        console.log(info);
+        throw err;
+      } 
+      console.log("Message sent: ", info);
+    });
     console.log(response);
     this.transport.close();
     return response;
